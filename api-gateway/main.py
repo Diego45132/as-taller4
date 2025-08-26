@@ -1,73 +1,98 @@
 from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import requests
+import httpx
 import os
 
-# Define la instancia de la aplicación FastAPI.
-app = FastAPI(title="API Gateway Taller Microservicios")
+app = FastAPI(title="API Gateway - Mercado de Segunda Mano")
 
-# Configura CORS (Cross-Origin Resource Sharing).
-# Esto es esencial para permitir que el frontend se comunique con el gateway.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite peticiones desde cualquier origen (ajustar en producción)
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Crea un enrutador para las peticiones de los microservicios.
 router = APIRouter(prefix="/api/v1")
 
-# Define los microservicios y sus URLs.
-# La URL debe coincidir con el nombre del servicio definido en docker-compose.yml.
-# El puerto debe ser el del contenedor (ej. auth-service:8001).
 SERVICES = {
     "auth": os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001"),
-    # TODO: Agrega los URLs de los otros microservicios de tu tema.
-    # "service1_name": os.getenv("NAME1_SERVICE_URL", "http://service1-service:8002"),
-    # "service2_name": os.getenv("NAME2_SERVICE_URL", "http://service2-service:8003"),
-    # "service3_name": os.getenv("NAME3_SERVICE_URL", "http://service3-service:8004"),
+    "users": os.getenv("USERS_SERVICE_URL", "http://users:8001"),
+    "products": os.getenv("PRODUCTS_SERVICE_URL", "http://products:8002"),
+    "listings": os.getenv("LISTINGS_SERVICE_URL", "http://listings:8003"),
 }
 
-# TODO: Implementa una ruta genérica para redirigir peticiones GET.
+def build_service_url(service_name: str, path: str) -> str:
+    return f"{SERVICES[service_name].rstrip('/')}/{path.lstrip('/')}"
+
+
 @router.get("/{service_name}/{path:path}")
 async def forward_get(service_name: str, path: str, request: Request):
     if service_name not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
     
-    service_url = f"{SERVICES[service_name]}/{path}"
-    
+    service_url = build_service_url(service_name, path)
+
     try:
-        response = requests.get(service_url, params=request.query_params)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(service_url, params=request.query_params)
         response.raise_for_status()
         return response.json()
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error forwarding request to {service_name}: {e}")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"GET error forwarding to {service_name}: {e}")
 
-# TODO: Implementa una ruta genérica para redirigir peticiones POST.
+
 @router.post("/{service_name}/{path:path}")
 async def forward_post(service_name: str, path: str, request: Request):
     if service_name not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
-    
-    service_url = f"{SERVICES[service_name]}/{path}"
-    
+
+    service_url = build_service_url(service_name, path)
+
     try:
-        # Pasa los datos JSON del cuerpo de la petición.
-        response = requests.post(service_url, json=await request.json())
+        payload = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(service_url, json=payload)
         response.raise_for_status()
         return response.json()
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error forwarding request to {service_name}: {e}")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"POST error forwarding to {service_name}: {e}")
 
-# TODO: Agrega más rutas para otros métodos HTTP (PUT, DELETE, etc.).
 
-# Incluye el router en la aplicación principal.
-app.include_router(router)
+@router.put("/{service_name}/{path:path}")
+async def forward_put(service_name: str, path: str, request: Request):
+    if service_name not in SERVICES:
+        raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
+    
+    service_url = build_service_url(service_name, path)
 
-# Endpoint de salud para verificar el estado del gateway.
+    try:
+        payload = await request.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.put(service_url, json=payload)
+        response.raise_for_status()
+        return response.json()
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"PUT error forwarding to {service_name}: {e}")
+
+
+@router.delete("/{service_name}/{path:path}")
+async def forward_delete(service_name: str, path: str):
+    if service_name not in SERVICES:
+        raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found.")
+    
+    service_url = build_service_url(service_name, path)
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.delete(service_url)
+        response.raise_for_status()
+        return response.json()
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"DELETE error forwarding to {service_name}: {e}")
+
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "API Gateway is running."}
 
+app.include_router(router)
