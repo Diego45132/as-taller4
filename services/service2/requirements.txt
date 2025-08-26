@@ -2,15 +2,16 @@
 fastapi
 uvicorn
 
-# TODO: Agrega las librerías específicas de tu servicio aquí
+# Librerías para bases de datos relacionales (PostgreSQL ejemplo)
+psycopg2-binary
+sqlalchemy
 
-# Por ejemplo, si usas PostgreSQL:
-# psycopg2-binary
-# sqlalchemy
+# Librerías para bases de datos NoSQL (MongoDB ejemplo)
+motor
+pymongo
 
-# Si usas MongoDB:
-# motor
-# pymongo
+# Librería para Redis (cache, cola, etc.)
+redis
 
-# Si usas Redis:
-# redis
+# Otras utilidades que podrían ser útiles (opcional)
+python-multipart  # Para manejo de formularios y archivos en FastAPI

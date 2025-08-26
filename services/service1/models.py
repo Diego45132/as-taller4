@@ -5,48 +5,37 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
-# Define la base declarativa
 Base = declarative_base()
 
-# TODO: Crea tus modelos de datos aquí.
-# Cada clase de modelo representa una tabla en tu base de datos.
-# Debes renombrar YourModel por el nombre de la Clase según el servicio
-class YourModel(Base):
+class Producto(Base):
     """
-    Plantilla de modelo de datos para un recurso.
-    Ajusta esta clase según los requisitos de tu tema.
+    Modelo de datos para un producto en el mercado de segunda mano.
     """
-    __tablename__ = "[nombre_de_tu_tabla]"
+    __tablename__ = "productos"
 
-    # Columnas de la tabla
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String)
+    nombre = Column(String(100), index=True, nullable=False)
+    descripcion = Column(String(500), nullable=True)
+    precio = Column(Integer, nullable=False, default=0)  
+    disponible = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # TODO: Agrega más columnas según sea necesario.
-    # Por ejemplo:
-    # is_active = Column(Boolean, default=True)
-    # foreign_key_id = Column(Integer, ForeignKey("otra_tabla.id"))
-
     def __repr__(self):
-        return f"<YourModel(id={self.id}, name='{self.name}')>"
+        return f"<Producto(id={self.id}, nombre='{self.nombre}', precio={self.precio})>"
 
-# TODO: Define los modelos Pydantic para la validación de datos.
-# Estos modelos se usarán en los endpoints de FastAPI para validar la entrada y salida.
 
-class YourModelBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-    # TODO: Agrega los campos que se necesitan para crear o actualizar un recurso.
+class ProductoBase(BaseModel):
+    nombre: str
+    descripcion: Optional[str] = None
+    precio: int
+    disponible: Optional[bool] = True
 
-class YourModelCreate(YourModelBase):
+class ProductoCreate(ProductoBase):
     pass
 
-class YourModelRead(YourModelBase):
+class ProductoRead(ProductoBase):
     id: int
     created_at: datetime
-    
-    class Config:
-        orm_mode = True # Habilita la compatibilidad con ORM
 
+    class Config:
+        orm_mode = True  

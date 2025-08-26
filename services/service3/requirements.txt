@@ -2,15 +2,13 @@
 fastapi
 uvicorn
 
-# TODO: Agrega las librerías específicas de tu servicio aquí
+# Librerías para base de datos PostgreSQL
+psycopg2-binary
+sqlalchemy
 
-# Por ejemplo, si usas PostgreSQL:
-# psycopg2-binary
-# sqlalchemy
+# Librerías para base de datos MongoDB
+motor
+pymongo
 
-# Si usas MongoDB:
-# motor
-# pymongo
-
-# Si usas Redis:
-# redis
+# Librería para Redis
+redis

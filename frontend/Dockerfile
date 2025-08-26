@@ -15,6 +15,9 @@ COPY . .
 # Exponemos el puerto en el que la aplicación Flask se ejecutará.
 EXPOSE 5000
 
+# Define la variable de entorno para Flask
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=development  # Opcional, para modo debug
+
 # Flask se ejecutará en todas las interfaces de red (0.0.0.0) en el puerto 5000.
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
-

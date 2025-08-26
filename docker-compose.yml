@@ -18,7 +18,9 @@ services:
       - "8000:8000"
     depends_on:
       - auth-service
-    # Aquí puedes agregar los otros servicios base
+      - service1-service
+      - service2-service
+      - service3-service
 
   # Microservicio de Autenticación
   auth-service:
@@ -40,35 +42,80 @@ services:
     volumes:
       - auth_data:/data/db
 
-  # --- Plantillas de Microservicios ---
-  # TODO: Copiar y modificar "service1" para cada servicio según el tema seleccionado
-  
-  # Microservicio de Nombre_del_microservicio
+  # Microservicio 1
   service1-service:
-     build: ./services/service1 
-     container_name: service1-service
-     ports:
-       - "8002:8002"
-     environment:
-       - DATABASE_URL=postgresql://user:password@service1-db:5432/service1_db
-     depends_on:
-       - service1-db
+    build: ./services/service1
+    container_name: service1-service
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://user:password@service1-db:5432/service1_db
+    depends_on:
+      - service1-db
 
-  # Base de datos para el servicio1
+  # Base de datos para servicio 1
   service1-db:
-     image: postgres:latest
-     container_name: service1-db
-     environment:
-       - POSTGRES_USER=user
-       - POSTGRES_PASSWORD=password
-       - POSTGRES_DB=service1_db
-     ports:
-       - "5432:5432"
-     volumes:
-       - service1_data:/var/lib/postgresql/data
+    image: postgres:latest
+    container_name: service1-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=service1_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - service1_data:/var/lib/postgresql/data
+
+  # Microservicio 2
+  service2-service:
+    build: ./services/service2
+    container_name: service2-service
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://user:password@service2-db:5432/service2_db
+    depends_on:
+      - service2-db
+
+  # Base de datos para servicio 2
+  service2-db:
+    image: postgres:latest
+    container_name: service2-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=service2_db
+    ports:
+      - "5433:5432"  # Cambié puerto host para no colisionar con service1-db
+    volumes:
+      - service2_data:/var/lib/postgresql/data
+
+  # Microservicio 3
+  service3-service:
+    build: ./services/service3
+    container_name: service3-service
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://user:password@service3-db:5432/service3_db
+    depends_on:
+      - service3-db
+
+  # Base de datos para servicio 3
+  service3-db:
+    image: postgres:latest
+    container_name: service3-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=service3_db
+    ports:
+      - "5434:5432"  # Cambié puerto host para no colisionar con otros
+    volumes:
+      - service3_data:/var/lib/postgresql/data
 
 volumes:
   auth_data:
   service1_data:
-  # agregar volúmenes para los otros 2 microservicios
-
+  service2_data:
+  service3_data:

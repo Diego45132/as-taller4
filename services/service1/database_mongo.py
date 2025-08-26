@@ -1,16 +1,15 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-# Obtén la URL de la base de datos de las variables de entorno
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Crea el cliente de MongoDB
+DATABASE_URL = os.getenv("DATABASE_URL", "mongodb://localhost:27017")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "micromarket_db")
+
+
 client = AsyncIOMotorClient(DATABASE_URL)
 
-# Selecciona la base de datos
-db = client.get_database()
+db = client[DATABASE_NAME]
 
-# Función para obtener la colección
-def get_collection(collection_name):
+def get_collection(collection_name: str):
+    """Devuelve una colección de la base de datos MongoDB."""
     return db[collection_name]
-

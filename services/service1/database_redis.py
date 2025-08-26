@@ -1,15 +1,12 @@
 import redis
 import os
 
-# Obtén la URL de la base de datos de las variables de entorno
-REDIS_URL = os.getenv("REDIS_URL", "redis://redis-db:6379/0")
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
-# Crea el cliente de Redis
+_redis_client = None
+
 def get_redis_client():
-    return redis.from_url(REDIS_URL)
-
-# Ejemplo de uso:
-# redis_client = get_redis_client()
-# redis_client.set("my_key", "my_value")
-# value = redis_client.get("my_key")
-
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = redis.from_url(REDIS_URL, decode_responses=True)  # decode=True para obtener strings en lugar de bytes
+    return _redis_client

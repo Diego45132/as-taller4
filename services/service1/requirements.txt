@@ -1,16 +1,23 @@
-# Dependencias básicas para un servicio FastAPI
+# Dependencias básicas para FastAPI
 fastapi
 uvicorn
 
-# TODO: Agrega las librerías específicas de tu servicio aquí
+# Librerías comunes para bases de datos SQL (PostgreSQL)
+psycopg2-binary
+sqlalchemy
 
-# Por ejemplo, si usas PostgreSQL:
-# psycopg2-binary
-# sqlalchemy
+# Librerías para MongoDB (asíncronas)
+motor
+pymongo
 
-# Si usas MongoDB:
-# motor
-# pymongo
+# Librería para Redis
+redis
 
-# Si usas Redis:
-# redis
+# Para recibir archivos multipart/form-data en FastAPI
+python-multipart
+
+# Para validaciones y serialización extra (opcional)
+pydantic[email]
+
+# Para entornos de desarrollo (opcional)
+python-dotenv
