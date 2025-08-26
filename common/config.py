@@ -1,39 +1,36 @@
 import os
 from dotenv import load_dotenv
 
-# Carga las variables de entorno del archivo .env
-# Esto asegura que las configuraciones se obtengan desde el entorno de ejecución,
-# lo que es una buena práctica para entornos de desarrollo y producción.
+# Carga las variables de entorno desde un archivo .env si existe
 load_dotenv()
 
-# TODO: Define una clase para agrupar las configuraciones.
+
 class Settings:
-    """Clase para gestionar las configuraciones de la aplicación."""
-    
-    # URLs de los servicios
-    # La URL del API Gateway se obtiene de las variables de entorno.
+    """Clase para gestionar las configuraciones globales de la aplicación."""
+
+    # Entorno de ejecución: development, staging, production
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+
+    # URL del API Gateway
     API_GATEWAY_URL: str = os.getenv("API_GATEWAY_URL", "http://localhost:8000")
-    
-    # TODO: Agrega las URLs de los microservicios si son necesarias aquí.
-    # Por ejemplo, para pruebas o scripts de utilidades.
-    # AUTH_SERVICE_URL: str = os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001")
-    # CATALOG_SERVICE_URL: str = os.getenv("CATALOG_SERVICE_URL", "http://catalog-service:8002")
 
-    # TODO: Agrega otras configuraciones globales.
-    # Por ejemplo, una clave secreta para la autenticación o el token JWT.
-    # SECRET_KEY: str = os.getenv("SECRET_KEY", "tu-clave-secreta-muy-segura")
-    # ALGORITHM: str = "HS256"
+    # URLs internas de microservicios (útiles para pruebas, tareas o workers)
+    AUTH_SERVICE_URL: str = os.getenv("AUTH_SERVICE_URL", "http://auth-service:8001")
+    USERS_SERVICE_URL: str = os.getenv("USERS_SERVICE_URL", "http://users:8001")
+    PRODUCTS_SERVICE_URL: str = os.getenv("PRODUCTS_SERVICE_URL", "http://products:8002")
+    LISTINGS_SERVICE_URL: str = os.getenv("LISTINGS_SERVICE_URL", "http://listings:8003")
 
-# Crea una instancia de la clase de configuración.
+    # Seguridad (JWT u otra autenticación)
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "cambia_esto_en_produccion")
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+
+    # Base de datos (si aplica al microservicio actual)
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+
+    # Otras configuraciones globales que puedes necesitar
+    DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
+
+
+# Instancia global que puedes importar desde cualquier módulo
 settings = Settings()
-
-# --------------------------------------------------------------------------
-# Los estudiantes pueden importar este objeto settings en cualquier parte 
-# de su código para acceder a las configuraciones de manera consistente.
-# 
-# Ejemplo de uso en un microservicio
-# from common.config import settings
-# 
-# Ahora puedes acceder a las variables de configuración
-# api_url = settings.API_GATEWAY_URL
-# 
