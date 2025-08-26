@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - Taller de Microservicios</title>
+    <title>{% block title %}{{ title | default('Inicio') }} - Taller de Microservicios{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
     <header>
-        <h1>{{ title }}</h1>
+        <h1>{{ title | default("Taller de Microservicios") }}</h1>
         <nav>
             <a href="{{ url_for('index') }}">Inicio</a>
-            </nav>
+            <!-- Puedes agregar más enlaces aquí -->
+        </nav>
     </header>
 
     <main>
-        {% block content %}{% endblock %}
+        {% block content %}
+        <!-- Contenido dinámico irá aquí -->
+        {% endblock %}
     </main>
 
     <footer>
         <p>&copy; 2025 Taller de Microservicios</p>
     </footer>
+
 </body>
 </html>
