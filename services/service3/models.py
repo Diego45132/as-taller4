@@ -18,8 +18,6 @@ class Item(Base):
     description = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-   
-
     def __repr__(self):
         return f"<Item(id={self.id}, name='{self.name}')>"
 
@@ -29,6 +27,7 @@ class ItemBase(BaseModel):
     description: Optional[str] = None
 
 class ItemCreate(ItemBase):
+    """Schema para crear un Item."""
     pass
 
 class ItemRead(ItemBase):

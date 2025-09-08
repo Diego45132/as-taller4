@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   frontend:
@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - API_GATEWAY_URL=http://api-gateway:8000
+      - API_GATEWAY_URL=http://api-gateway:8000 # URL del backend
     depends_on:
       - api-gateway
 

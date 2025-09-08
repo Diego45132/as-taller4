@@ -1,23 +1,20 @@
 FROM python:3.12-slim
 
-# Establece el directorio de trabajo dentro del contenedor.
+ENV DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /app
 
-# Copia el archivo de dependencias.
 COPY requirements.txt .
 
-# Instala las dependencias.
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip && \
+	python -m pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto de los archivos de la aplicación (código, templates, estáticos).
 COPY . .
 
-# Exponemos el puerto en el que la aplicación Flask se ejecutará.
 EXPOSE 5000
 
-# Define la variable de entorno para Flask
+# Define la variable de entorno para Flask (sin espacios alrededor de '=')
 ENV FLASK_APP=app.py
-ENV FLASK_ENV=development  # Opcional, para modo debug
+ENV FLASK_ENV=development
 
-# Flask se ejecutará en todas las interfaces de red (0.0.0.0) en el puerto 5000.
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
